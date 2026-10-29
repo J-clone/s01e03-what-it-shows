@@ -20,7 +20,7 @@ files them by tenant.
 - The logic behind it: [`support-kb/src/lib/kb/problems.ts`](support-kb/src/lib/kb/problems.ts) and [`ProblemTable.svelte`](support-kb/src/lib/kb/ProblemTable.svelte)
 - As the desk sees it: [`support-kb/build/kb/incidents/4471-problems.html`](support-kb/build/kb/incidents/4471-problems.html), and a screenshot, [`support-kb/rendered/4471-problems.png`](support-kb/rendered/4471-problems.png)
 
-The page is signed `J-clone`, desk ref `DR-9J5P-6K81`.
+The page is signed with the course ticket for this Challenge, desk ref `DR-YNBK-PATZ`.
 
 ## Build
 
