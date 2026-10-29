@@ -44,6 +44,13 @@
 </table>
 
 {#each groups as g (g.problem)}
+  {@const moved = g.problem === 'shift' ? 0 : g.reports.filter((r) => notes.oneDayMove.includes(r.id)).length}
+  {#if moved}
+    <p class="small">{moved} of the <code>{g.problem}</code> reports read as a one-day move: counted under <code>{g.problem}</code>, where the desk files them by tenant, and under <code>shift</code>.</p>
+  {/if}
+{/each}
+
+{#each groups as g (g.problem)}
   <details>
     <summary><code>{g.problem}</code>: the {g.reports.length} reports</summary>
     <p class="ids">{g.reports.map((r) => r.id).sort().join(' ')}</p>
