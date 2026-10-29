@@ -1,0 +1,73 @@
+---
+layout: runbook
+title: '#4471 split by problem'
+owner: support desk
+status: open
+reviewed: 2026-10-28
+signature: J-clone
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const repo = 'J-clone/s01e03-what-it-shows';
+</script>
+
+The desk merged every report about a wrong date into [#4471](/kb/incidents/4471) and marked it
+known, with one fix queued: the parser. The reports describe more than one fault, and each fault
+needs its own fix. The table below splits them, and each problem now has its own ticket.
+
+<Callout kind="warn">
+#4471 is not one issue. After the parser fix ships, the booking-v3 date hint and the one-day move
+still put bookings on the wrong day.
+</Callout>
+
+## What #4471 holds
+
+<ProblemTable ticket={4471} {repo} filed={{ parser: 1, hint: 2, shift: 3 }} />
+
+### `parser`: month and day swapped
+
+The shared parser reads every date month first. Every tenant on file writes the day first, so
+4 March comes out as 3 April. It reaches us by app, email and form, from every tenant. This is
+the fault #4471 names. Its ticket tracks the fix that is already queued.
+
+### `hint`: the booking-v3 form asks for the month first
+
+booking-v3 prints `MM/DD/YYYY` under its date field. A day-first tenant's clients type the month
+first, as the hint tells them, and the form then reads what they typed day first. The result is
+a swapped month and day, the same as the parser fault, so nothing in the body tells them apart. A
+parser fix does not change the hint.
+
+The desk can only see it in reports that came in through the form of a tenant on booking-v3. A
+booking made on that form but reported by app or email counts under `parser`, so this count is a
+floor.
+
+### `shift`: a day off, not a swap
+
+These reports do not swap month and day. Each is off by a day or by a time zone: 12 May shows as
+11 May, a client in Lisbon gets Tuesday while a client in Toronto gets Monday, an invite arrives
+before the booking was made. The parser fix changes none of them. The first suspect is a time
+zone conversion; the ticket asks engineering to confirm it.
+The desk listed them in `desk-notes.json` as one-day moves and then counted them under `parser`.
+
+## How to tell them apart
+
+1. Ignore the subject line. The same subjects ("Date is wrong", "Month and day swapped?") come in
+   for every problem here.
+2. Ignore intake's tag. Intake guesses from the reporter's browser; the cause depends on the
+   tenant. The table counts how many tags are wrong.
+3. Read the body. A date off by a day or a time zone, with month and day not swapped, is `shift`:
+   add its id to the one-day moves in `desk-notes.json`.
+4. Otherwise, a report that came in through a booking-v3 form is `hint`. Anything else is `parser`.
+
+## Why one ticket hid the rest
+
+Until 2 July nothing was merged. That day the desk merged every report received since 1 April
+into #4471 at once, across all subjects, and kept merging new ones as they came. A merged ticket
+is counted as one bug. Merge a report into a ticket only when it shares the ticket's cause, not just its
+symptom.
+
+<RenderStamp {signature} />
